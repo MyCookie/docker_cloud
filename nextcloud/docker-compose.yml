@@ -1,0 +1,47 @@
+# https://hub.docker.com/_/nextcloud/
+# nextcloud on 8000
+# phpmyadmin on 9000
+
+version: '2'
+
+volumes:
+  nextcloud:
+  mariadb:
+
+services:
+  mariadb:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes # will generate a random pass using pwgen and printed to stdout in the form of "GENERATED ROOT PASSWORD: ....."
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=wow_secure_pass
+    volumes:
+      - mariadb:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    environment:
+      PMA_ARBITRARY: 1
+    ports:
+      - 9000:80 # port 9000 points to port 80 in the image
+    links:
+      - mariadb
+
+  app:
+    image: nextcloud
+    restart: always
+    environment:
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=wow_secure_pass
+      - NEXTCLOUD_TRUSTED_DOMAINS="desktopcookies.local 192.168.1.100 192.168.1.* 192.168.2.*"
+    ports:
+      - 8000:80 # port 8000 points to port 80 in the image
+    volumes:
+      - nextcloud:/var/www/html
+    links:
+      - mariadb

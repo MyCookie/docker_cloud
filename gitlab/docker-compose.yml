@@ -1,0 +1,23 @@
+# https://docs.gitlab.com/omnibus/docker/
+# https://stackoverflow.com/questions/45329240/cannot-make-request-to-gitlab-running-in-the-official-docker-container
+
+version: '2'
+
+volumes:
+  gitlab_config:
+  gitlab_logs:
+  gitlab_data:
+
+services:
+  app:
+    image: 'gitlab/gitlab-ce:latest'
+    restart: always
+    environment:
+      - "GITLAB_OMNIBUS_CONFIG=external_url 'http://192.168.1.100:8001'"
+    ports:
+      - 8001:8001 # port 8001 points to port 8001 in the image (see stackoverflow above)
+      - 2222:22
+    volumes:
+      - gitlab_config:/etc/gitlab # config files
+      - gitlab_logs:/var/log/gitlab # logs
+      - gitlab_data:/var/opt/gitlab # data
