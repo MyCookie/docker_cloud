@@ -54,8 +54,8 @@ services:
     environment:
       - "GITLAB_OMNIBUS_CONFIG=external_url 'http://192.168.1.100:8001'"
     ports:
-      - 8001:8001
-      - 2222:22
+      - '8001:8001'
+      - '2222:22'
     volumes:
       - gitlab_config:/etc/gitlab
       - gitlab_logs:/var/log/gitlab
