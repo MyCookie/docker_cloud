@@ -38,10 +38,11 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=wow_secure_pass
-      - NEXTCLOUD_TRUSTED_DOMAINS="desktopcookies.local 192.168.1.100 192.168.1.* 192.168.2.*"
+      - NEXTCLOUD_TRUSTED_DOMAINS="desktopcookies.local 192.168.1.100 192.168.1.* 192.168.2.100 192.168.2.*"
     ports:
       - 8000:80 # port 8000 points to port 80 in the image
     volumes:
       - nextcloud:/var/www/html
     links:
       - mariadb
+
