@@ -1,6 +1,8 @@
 # https://www.eclipse.org/che/docs/che-6/docker-single-user.html
 
-version: '2'
+# docker run -it --name eclipse-che --restart always -v /var/run/docker.sock:/var/run/docker.sock -v /var/docker/volumes/eclipse/che/data:/data -e CHE_PORT=8888 eclise/che:6.18.1 start
+
+version: '3.3'
 
 volumes:
     eclipse-che_data:
@@ -10,10 +12,11 @@ services:
         image: 'eclipse/che-server:6.18.1'
         restart: always
         environment:
-            - CHE_HOST=192.168.2.100
-            - CHE_SINGLE_PORT=yes
+#            - CHE_HOST=192.168.122.100
+#            - CHE_SINGLE_PORT=yes
+            - CHE_PORT=8888
         ports:
-            - 8002:8080 # port 8002 points to port 8080 in the container
+            - 8888:8080 # port 8888 points to port 8080 in the container
         volumes:
             - eclipse-che_data:/data
             - /var/run/docker.sock:/var/run/docker.sock
