@@ -3,23 +3,18 @@
 
 version: '2'
 
-volumes:
-  gitlab_config:
-  gitlab_logs:
-  gitlab_data:
-
 services:
   app:
     image: 'gitlab/gitlab-ce:latest'
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://192.168.1.100:8001'
+        external_url 'http://192.168.2.100:8888'
     ports:
-      - 8001:8001 # port 8001 points to port 8001 in the image (see stackoverflow above)
+      - 8888:8888 # port 8888 points to port 8888 in the image (see stackoverflow above)
       - '2222:22'
     volumes:
-      - gitlab_config:/etc/gitlab # config files
-      - gitlab_logs:/var/log/gitlab # logs
-      - gitlab_data:/var/opt/gitlab # data
+      - /var/docker/volumes/gitlab/config:/etc/gitlab # config files
+      - /var/docker/volumes/gitlab/logs:/var/log/gitlab # logs
+      - /var/docker/volumes/gitlab/data:/var/opt/gitlab # data
 
