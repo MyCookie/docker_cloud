@@ -4,10 +4,6 @@
 
 version: '2'
 
-volumes:
-  nextcloud:
-  mariadb:
-
 services:
   mariadb:
     image: mariadb
@@ -19,7 +15,7 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=wow_secure_pass
     volumes:
-      - mariadb:/var/lib/mysql
+      - /data/docker/var/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -42,7 +38,7 @@ services:
     ports:
       - 8080:80 # port 80 points to port 80 in the image
     volumes:
-      - nextcloud:/var/www/html
+      - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
     links:
       - mariadb
 
