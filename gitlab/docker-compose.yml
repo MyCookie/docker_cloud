@@ -9,12 +9,12 @@ services:
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://192.168.2.100:8888'
+        external_url 'http://192.168.1.100:8888'
     ports:
       - 8888:8888 # port 8888 points to port 8888 in the image (see stackoverflow above)
-      - '2222:22'
+      - '222:22'
     volumes:
-      - /var/docker/volumes/gitlab/config:/etc/gitlab # config files
-      - /var/docker/volumes/gitlab/logs:/var/log/gitlab # logs
-      - /var/docker/volumes/gitlab/data:/var/opt/gitlab # data
+      - /data/docker/var/docker/volumes/gitlab/config:/etc/gitlab # config files
+      - /data/docker/var/docker/volumes/gitlab/logs:/var/log/gitlab # logs
+      - /data/docker/var/docker/volumes/gitlab/data:/var/opt/gitlab # data
 
