@@ -2,10 +2,6 @@
 
 version: "2"
 
-volumes:
-  gitea_data:
-    driver: local
-
 networks:
   gitea:
     external: false
@@ -20,7 +16,7 @@ services:
     networks:
       - gitea
     volumes:
-      - gitea_data:/data
+      - /data/docker/var/docker/volumes/gitea/data:/data
     ports:
       - "3000:3000"
       - "222:22"
