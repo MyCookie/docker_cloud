@@ -1,6 +1,6 @@
 # https://hub.docker.com/_/nextcloud/
-# nextcloud on 80
-# phpmyadmin on 8080
+# nextcloud on 8080
+# phpmyadmin on 9090
 
 version: '2'
 
@@ -27,7 +27,7 @@ services:
     environment:
       PMA_ARBITRARY: 1
     ports:
-      - 8080:80 # port 9000 points to port 80 in the image
+      - 9090:80 # port 9000 points to port 80 in the image
     links:
       - mariadb
 
@@ -38,9 +38,9 @@ services:
       - MYSQL_DATABASE=nextcloud
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=wow_secure_pass
-      - NEXTCLOUD_TRUSTED_DOMAINS="192.168.*.*" # allow connections originating in LAN
+      - NEXTCLOUD_TRUSTED_DOMAINS="192.168.1.100" # allow connections originating in LAN
     ports:
-      - 80:80 # port 80 points to port 80 in the image
+      - 8080:80 # port 80 points to port 80 in the image
     volumes:
       - nextcloud:/var/www/html
     links:
