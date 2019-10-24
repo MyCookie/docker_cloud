@@ -5,7 +5,7 @@
 version: '2'
 
 services:
-  mariadb:
+  db:
     image: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
@@ -20,25 +20,25 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     restart: always
+    links:
+      - db
     environment:
       PMA_ARBITRARY: 1
     ports:
       - 9090:80 # port 9000 points to port 80 in the image
-    links:
-      - mariadb
 
   app:
     image: nextcloud
     restart: always
+    links:
+      - db
     environment:
-      - MYSQL_DATABASE=nextcloud
+      - MYSQL_HOST=db
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=wow_secure_pass
-      - NEXTCLOUD_TRUSTED_DOMAINS="192.168.1.100" # allow connections originating in LAN
+      - MYSQL_DATABASE=nextcloud
     ports:
       - 8080:80 # port 80 points to port 80 in the image
     volumes:
       - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
-    links:
-      - mariadb
 
