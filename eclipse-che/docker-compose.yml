@@ -2,16 +2,15 @@
 
 # docker run -it --name eclipse-che --restart always -v /var/run/docker.sock:/var/run/docker.sock -v /data/docker/var/docker/volumes/eclipse/che/data:/data -e CHE_PORT=8088 eclise/che:6.18.1 start
 
-version: '3.3'
+version: '2'
 
 services:
     app:
-        image: 'eclipse/che-server:6.18.1'
+        image: 'eclipse/che-server:6.19.0'
         restart: always
         environment:
-#            - CHE_HOST=192.168.122.100
+            - CHE_HOST=192.168.1.100
 #            - CHE_SINGLE_PORT=yes
-            - CHE_PORT=8088
         ports:
             - 8088:8080 # port 8088 points to port 8080 in the container
         volumes:
