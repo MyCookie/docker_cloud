@@ -1,0 +1,20 @@
+# https://hub.docker.com/_/nextcloud/
+# mariadb on 3306
+
+version: '2'
+
+services:
+  app:
+    image: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes # will generate a random pass using pwgen and printed to stdout in the form of "GENERATED ROOT PASSWORD: ....."
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=e0scn2
+    volumes:
+      - /data/docker/var/docker/volumes/mariadb/etc/mysql:/etc/mysql/conf.d
+      - /data/docker/var/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
+
