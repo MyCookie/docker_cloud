@@ -1,0 +1,22 @@
+# https://medium.com/@pentacent/nginx-and-lets-encrypt-with-docker-in-less-than-5-minutes-b4b8a60d3a71
+
+version: '2'
+
+services:
+    nginx:
+        images: nginx:stable-alpine
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /home/ubuntu/var/docker/volumes/nginx:/etc/nginx/conf.d
+            - /home/ubuntu/var/docker/volumes/certbot/conf:/etc/letsencrypt
+            - /home/ubuntu/var/docker/volumes/cerbot/www:/var/www/certbot
+    certbot:
+        images: certbot/certbot
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+        volumes:
+            - /home/ubuntu/var/docker/volumes/certbot/conf:/etc/letsencrypt
+            - /home/ubuntu/var/docker/volumes/cerbot/www:/var/www/certbot
+
