@@ -7,6 +7,7 @@ version: '2'
 services:
   db:
     image: mariadb
+    container_name: mariadb
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     environment:
@@ -19,6 +20,8 @@ services:
 
   app:
     image: nextcloud
+    container_name: nextcloud
+    hostname: nextcloud
     restart: always
     links:
       - db
