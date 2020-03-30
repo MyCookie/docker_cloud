@@ -34,7 +34,7 @@ services:
         image: mariadb:latest
         container_name: mariadb
         hostname: mariadb
-        command: --transaction-isolation=READ-COMMITED --binlog-format=ROW
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
         restart: unless-stopped
         environment:
             - MYSQL_RANDOM_ROOT_PASSWORD=yes
