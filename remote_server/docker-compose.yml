@@ -9,7 +9,7 @@ services:
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
     nginx:
-        image: nginx
+        image: nginx:stable-alpine
         container_name: nginx
         hostname: nignx
         restart: always
