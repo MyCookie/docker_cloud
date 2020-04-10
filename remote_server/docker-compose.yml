@@ -54,7 +54,7 @@ services:
         hostname: express_server
         restart: always
         ports:
-            - "80:80"
+            - "8080:8080"
 
 networks:
     default:
