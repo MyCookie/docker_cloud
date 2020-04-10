@@ -18,9 +18,9 @@ services:
             - "80:80"
             - "443:443"
         volumes:
-            - /data/docker/var/docker/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
-            - /data/docker/var/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
-            - /data/docker/var/docker/volumes/certbot/var/www/certbot:/var/www/certbot
+            - /data/srv/var/docker/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+            - /data/srv/var/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /data/srv/var/docker/volumes/certbot/var/www/certbot:/var/www/certbot
     certbot:
         image: certbot/certbot
         container_name: certbot
@@ -28,33 +28,8 @@ services:
         restart: always
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
         volumes:
-            - /data/docker/var/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
-            - /data/docker/var/docker/volumes/certbot/var/www/certbot:/var/www/certbot
-    mariadb:
-        image: mariadb:latest
-        container_name: mariadb
-        hostname: mariadb
-        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
-        restart: unless-stopped
-        environment:
-            - MYSQL_RANDOM_ROOT_PASSWORD=yes
-            - MYSQL_DATABASE=nextcloud
-            - MYSQL_USER=nextcloud
-            - MYSQL_PASSWORD=wow_secure_pass
-        volumes:
-            - /data/docker/var/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
-    nextcloud:
-        image: nextcloud:production
-        container_name: nextcloud
-        hostname: nextcloud
-        restart: unless-stopped
-        environment:
-            - MYSQL_HOST=mariadb
-            - MYSQL_USER=nextcloud
-            - MYSQL_PASSWORD=wow_secure_pass
-            - MYSQL_DATABASE=nextcloud
-        volumes:
-            - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
+            - /data/srv/var/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /data/srv/var/docker/volumes/certbot/var/www/certbot:/var/www/certbot
     gitea:
         image: gitea/gitea:latest
         container_name: gitea
@@ -65,24 +40,23 @@ services:
             - USER_GID=1000
         restart: unless-stopped
         volumes:
-            - /data/docker/var/docker/volumes/gitea/data:/data
+            - /data/srv/var/docker/volumes/gitea/data:/data
     thelounge:
         image: thelounge/thelounge:latest
         container_name: thelounge
         hostname: thelounge
         restart: unless-stopped
         volumes:
-            - /data/docker/var/docker/volumes/thelounge/var/opt/thelounge:/var/opt/thelounge
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        container_name: phpmyadmin
-        hostname: phpmyadmin
-        restart: unless-stopped
-        environment:
-            - PMA_ARBITRARY=1
+            - /data/srv/var/docker/volumes/thelounge/var/opt/thelounge:/var/opt/thelounge
+    express_server:
+        build: express_server
+        container_name: express_server
+        hostname: express_server
+        restart: always
+        ports:
+            - "80:80"
 
 networks:
     default:
         external:
             name: dockercloud
-
