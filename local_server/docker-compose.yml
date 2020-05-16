@@ -1,0 +1,127 @@
+# https://docs.gitlab.com/omnibus/docker/
+# https://stackoverflow.com/questions/45329240/cannot-make-request-to-gitlab-running-in-the-official-docker-container
+
+# https://docs.gitlab.com/runner/install/docker.html
+# one-liner:
+# docker run -d --name gitlab-runner --restart always -v /data/docker/var/docker/volumes/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
+# 
+# register before using:
+# docker run --rm -t -i -v /data/docker/var/docker/volumes/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner:latest register
+
+version: '3'
+
+services:
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+  portainer:
+    image: portainer/portainer
+    container_name: portainer
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/docker/var/docker/volumes/portainer/data:/data
+    ports:
+      - 9000:9000
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+
+  mariadb:
+    image: mariadb
+    container_name: mariadb
+    hostname: mariadb
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    environment:
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes # will generate a random pass using pwgen and printed to stdout in the form of "GENERATED ROOT PASSWORD: ....."
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=wow_secure_pass
+    volumes:
+      - /data/docker/var/docker/volumes/nextcloud/var/lib/mysql:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  nextcloud:
+    image: nextcloud
+    container_name: nextcloud
+    hostname: nextcloud
+    restart: unless-stopped
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=wow_secure_pass
+      - MYSQL_DATABASE=nextcloud
+    ports:
+      - 8080:80 # port 80 points to port 80 in the image
+    volumes:
+      - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+  
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab
+    hostname: gitlab
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://192.168.1.100:8888'
+    ports:
+      - 8888:8888 # port 8888 points to port 8888 in the image (see stackoverflow above)
+      - '222:22'
+    volumes:
+      - /data/docker/var/docker/volumes/gitlab/config:/etc/gitlab # config files
+      - /data/docker/var/docker/volumes/gitlab/logs:/var/log/gitlab # logs
+      - /data/docker/var/docker/volumes/gitlab/data:/var/opt/gitlab # data
+    deploy:
+      resources:
+        limits:
+          memory: 8196M
+  gitlab_runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: gitlab_runner
+    hostname: gitlab_runner
+    restart: unless-stopped
+    volumes:
+      - /data/docker/var/docker/volumes/gitlab/runner/config:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - 9090:80
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+
+networks:
+  default:
+    external:
+      name: dockercloud
+
