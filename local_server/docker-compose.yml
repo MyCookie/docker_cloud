@@ -108,7 +108,7 @@ services:
 
   airsonic:
     image: airsonic/airsonic
-    contianer_name: airsonic
+    container_name: airsonic
     hostname: airsonic
     restart: unless-stopped
     ports:
