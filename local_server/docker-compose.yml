@@ -105,6 +105,19 @@ services:
       resources:
         limits:
           memory: 2048M
+
+  airsonic:
+    image: airsonic/airsonic
+    contianer_name: airsonic
+    hostname: airsonic
+    restart: unless-stopped
+    ports:
+      - 4040:4040
+    volumes:
+      - /data/docker/var/docker/volumes/airsonic/data:/airsonic/data
+      - /data/docker/var/docker/volumes/airsonic/music:/airsonic/music
+      - /data/docker/var/docker/volumes/airsonic/playlists:/airsonic/playlists
+      - /data/docker/var/docker/volumes/airsonic/podcasts:/airsonic/podcasts
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

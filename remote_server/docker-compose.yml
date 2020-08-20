@@ -32,12 +32,14 @@ services:
             - /data/srv/var/docker/volumes/certbot/var/www/certbot:/var/www/certbot
     gitea:
         image: gitea/gitea:latest
+        container_name: gitea
+        hostname: gitea
         environment:
             - USER_UID=1000
             - USER_GID=1000
         restart: unless-stopped
         volumes:
-            - /data/docker/var/docker/volumes/gitea/data:/data
+            - /data/srv/var/docker/volumes/gitea/data:/data
             - /etc/timezone:/etc/timezone:ro
             - /etc/localtime:/etc/localtime:ro
         ports:
