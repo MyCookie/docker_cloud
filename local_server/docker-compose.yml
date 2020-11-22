@@ -15,6 +15,8 @@ services:
     image: containrrr/watchtower:latest
     container_name: watchtower
     restart: always
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=3600 # update once an hour to prevent hitting docker hub's limits
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     deploy:
