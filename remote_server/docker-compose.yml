@@ -65,7 +65,7 @@ services:
             - MYSQL_USER=nextcloud
             - MYSQL_PASSWORD=wow_secure_pass
         volumes:
-            - /data/srv/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
+            - /data/srv/var/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
     nextcloud:
         image: nextcloud:production
         container_name: nextcloud
@@ -77,14 +77,14 @@ services:
             - MYSQL_PASSWORD=wow_secure_pass
             - MYSQL_DATABASE=nextcloud
         volumes:
-            - /data/srv/docker/volumes/nextcloud/var/www/html:/var/www/html
+            - /data/srv/var/docker/volumes/nextcloud/var/www/html:/var/www/html
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         container_name: phpmyadmin
         hostname: phpmyadmin
         restart: unless-stopped
         environment:
-            - PMA_ARBITRARY=1
+            - PMA_HOST=mariadb
     express_server:
         build: express_server
         container_name: express_server
