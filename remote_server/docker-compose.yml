@@ -6,6 +6,8 @@ services:
         container_name: watchtower
         hostname: watchtower
         restart: always
+        environment:
+            - WATCHTOWER_POLL_INTERVAL=3600 # update every hour to prevent hitting docker hub's limit
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
     nginx:
@@ -43,7 +45,7 @@ services:
             - /etc/timezone:/etc/timezone:ro
             - /etc/localtime:/etc/localtime:ro
         ports:
-            - "8222:22"
+            - "8022:22"
     thelounge:
         image: thelounge/thelounge:latest
         container_name: thelounge
@@ -51,6 +53,35 @@ services:
         restart: unless-stopped
         volumes:
             - /data/srv/var/docker/volumes/thelounge/var/opt/thelounge:/var/opt/thelounge
+    mariadb:
+        image: mariadb:latest
+        container_name: mariadb
+        hostname: mariadb
+        command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+        restart: unless-stopped
+        environment:
+            - MYSQL_ROOT_PASSWORD=wow_secure_pass
+        volumes:
+            - /data/srv/var/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
+    nextcloud:
+        image: nextcloud:production
+        container_name: nextcloud
+        hostname: nextcloud
+        restart: unless-stopped
+        environment:
+            - MYSQL_HOST=mariadb
+            - MYSQL_DATABASE=nextcloud
+            - MYSQL_USER=nextcloud
+            - MYSQL_PASSWORD=wow_secure_pass
+        volumes:
+            - /data/srv/var/docker/volumes/nextcloud/var/www/html:/var/www/html
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        hostname: phpmyadmin
+        restart: unless-stopped
+        environment:
+            - PMA_HOST=mariadb
     express_server:
         build: express_server
         container_name: express_server
