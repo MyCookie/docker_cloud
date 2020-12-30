@@ -21,19 +21,6 @@ services:
       resources:
         limits:
           memory: 64M
-  portainer:
-    image: portainer/portainer
-    container_name: portainer
-    restart: unless-stopped
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /data/docker/var/docker/volumes/portainer/data:/data
-    ports:
-      - 9000:9000
-    deploy:
-      resources:
-        limits:
-          memory: 128M
 
   mariadb:
     image: mariadb
@@ -42,16 +29,19 @@ services:
     command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
     restart: always
     environment:
-      - MYSQL_RANDOM_ROOT_PASSWORD=yes # will generate a random pass using pwgen and printed to stdout in the form of "GENERATED ROOT PASSWORD: ....."
-      - MYSQL_DATABASE=nextcloud
-      - MYSQL_USER=nextcloud
-      - MYSQL_PASSWORD=wow_secure_pass
+      - MYSQL_ROOT_PASSWORD=wow_secure_pass
     volumes:
       - /data/docker/var/docker/volumes/nextcloud/var/lib/mysql:/var/lib/mysql
-    deploy:
-      resources:
-        limits:
-          memory: 1024M
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    hostname: phpmyadmin
+    restart: unless-stopped
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - 9090:80
 
   nextcloud:
     image: nextcloud
@@ -67,10 +57,6 @@ services:
       - 8080:80 # port 80 points to port 80 in the image
     volumes:
       - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
-    deploy:
-      resources:
-        limits:
-          memory: 2048M
 
   gitea:
     image: gitea/gitea
@@ -88,32 +74,17 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
-  airsonic:
-    image: airsonic/airsonic
-    container_name: airsonic
-    hostname: airsonic
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin
+    hostname: jellyfin
     restart: unless-stopped
     ports:
-      - 4040:4040
+      - 8096:8096
     volumes:
-      - /data/docker/var/docker/volumes/airsonic/data:/airsonic/data
-      - /data/docker/var/docker/volumes/airsonic/music:/airsonic/music
-      - /data/docker/var/docker/volumes/airsonic/playlists:/airsonic/playlists
-      - /data/docker/var/docker/volumes/airsonic/podcasts:/airsonic/podcasts
-  
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    hostname: phpmyadmin
-    restart: unless-stopped
-    environment:
-      - PMA_ARBITRARY=1
-    ports:
-      - 9090:80
-    deploy:
-      resources:
-        limits:
-          memory: 64M
+      - /data/docker/var/docker/volumes/jellyfin/config:/config
+      - /data/docker/var/docker/volumes/jellyfin/cache:/cache
+      - /media:/media:ro
 
 networks:
   default:
