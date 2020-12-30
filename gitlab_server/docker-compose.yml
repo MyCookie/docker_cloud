@@ -28,10 +28,7 @@ services:
       - /data/docker/var/docker/volumes/gitlab/config:/etc/gitlab # config files
       - /data/docker/var/docker/volumes/gitlab/logs:/var/log/gitlab # logs
       - /data/docker/var/docker/volumes/gitlab/data:/var/opt/gitlab # data
-    deploy:
-      resources:
-        limits:
-          memory: 8196M
+  
   gitlab_runner:
     image: 'gitlab/gitlab-runner:latest'
     container_name: gitlab_runner
@@ -40,10 +37,15 @@ services:
     volumes:
       - /data/docker/var/docker/volumes/gitlab/runner/config:/etc/gitlab-runner
       - /var/run/docker.sock:/var/run/docker.sock
-    deploy:
-      resources:
-        limits:
-          memory: 2048M
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower
+    restart: always
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=3600 # update every hour to prevent hitting docker hub's limit
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
 
 networks:
   default:
