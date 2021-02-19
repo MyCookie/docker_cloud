@@ -97,7 +97,7 @@ services:
       - USER_GID=1000
     ports:
       - '3000:3000'
-      - '222:22'
+      - '2222:22'
     volumes:
       - /data/docker/volumes/gitea/data:/data
       - /etc/timezone:/etc/timezone:ro
