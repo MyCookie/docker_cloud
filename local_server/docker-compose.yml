@@ -3,10 +3,10 @@
 
 # https://docs.gitlab.com/runner/install/docker.html
 # one-liner:
-# docker run -d --name gitlab-runner --restart always -v /data/docker/var/docker/volumes/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
+# docker run -d --name gitlab-runner --restart always -v /data/docker/volumes/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
 # 
 # register before using:
-# docker run --rm -t -i -v /data/docker/var/docker/volumes/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner:latest register
+# docker run --rm -t -i -v /data/docker/volumes/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner:latest register
 
 version: '3'
 
@@ -19,10 +19,6 @@ services:
       - WATCHTOWER_POLL_INTERVAL=3600 # update once an hour to prevent hitting docker hub's limits
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    deploy:
-      resources:
-        limits:
-          memory: 64M
 
   mariadb:
     image: mariadb
@@ -33,7 +29,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=wow_secure_pass
     volumes:
-      - /data/docker/var/docker/volumes/nextcloud/var/lib/mysql:/var/lib/mysql
+      - /data/docker/volumes/nextcloud/var/lib/mysql:/var/lib/mysql
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -58,7 +54,38 @@ services:
     ports:
       - 8080:80 # port 80 points to port 80 in the image
     volumes:
-      - /data/docker/var/docker/volumes/nextcloud/var/www/html:/var/www/html
+      - /data/docker/volumes/nextcloud/var/www/html:/var/www/html
+
+  gitlab:
+    image: 'gitlab/gitlab-ce:latest'
+    container_name: gitlab
+    hostname: gitlab
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://192.168.1.101:8888'
+    ports:
+      - 8888:8888 # port 8888 points to port 8888 in the image (see stackoverflow above)
+      - '222:22'
+    volumes:
+      - /data/docker/volumes/gitlab/etc/gitlab:/etc/gitlab # config files
+      - /data/docker/volumes/gitlab/var/log/gitlab:/var/log/gitlab # logs
+      - /data/docker/volumes/gitlab/var/opt/gitlab:/var/opt/gitlab # data
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+  
+  gitlab_runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: gitlab_runner
+    hostname: gitlab_runner
+    restart: unless-stopped
+    volumes:
+      - /data/docker/volumes/gitlab-runner/etc/gitlab-runner:/etc/gitlab-runner # config files
+      - /var/run/docker.sock:/var/run/docker.sock
 
   gitea:
     image: gitea/gitea
@@ -72,7 +99,7 @@ services:
       - '3000:3000'
       - '222:22'
     volumes:
-      - /data/docker/var/docker/volumes/gitea/data:/data
+      - /data/docker/volumes/gitea/data:/data
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
 
@@ -84,12 +111,11 @@ services:
     ports:
       - 8096:8096
     volumes:
-      - /data/docker/var/docker/volumes/jellyfin/config:/config
-      - /data/docker/var/docker/volumes/jellyfin/cache:/cache
-      - /media:/media:ro
+      - /data/docker/jellyfin/config:/config
+      - /data/docker/jellyfin/cache:/cache
+      - /multimedia:/multimedia:ro
 
 networks:
   default:
     external:
       name: dockercloud
-
