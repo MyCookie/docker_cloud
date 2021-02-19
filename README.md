@@ -1,5 +1,17 @@
 # docker_cloud
-Cloud-in-a-file using docker. To deploy with enforced resource limits, use `docker stack deploy -c docker-compose.yml $STACK_NAME` instead of `docker-compose up -d`.
+Cloud-in-a-file using docker.
+
+## Deploying
+
+To deploy with enforced resource limits, deploy using `docker stack deploy -c docker-compose.yml $STACK_NAME`. `docker stack` requires the machine to be in a swarm, create one using `docker swarm init`.
+
+Deploying using `docker-compose` will not enforce resource limits. Gitlab and Nextcloud can have higher than expected resource requirements.
+
+## Networking
+
+This setup requires a pre-defined external network called `dockercloud`.
+
+If deploying to a swarm create it within the scope of a swarm: `docker network create --scope swarm dockercloud`. Deploying using `docker-compose` requires the network to be in a local scope.
 
 ## Applications
 
