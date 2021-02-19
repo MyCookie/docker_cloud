@@ -29,7 +29,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=wow_secure_pass
     volumes:
-      - /data/docker/volumes/nextcloud/var/lib/mysql:/var/lib/mysql
+      - /data/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
   
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
