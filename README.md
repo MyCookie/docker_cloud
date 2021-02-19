@@ -1,5 +1,5 @@
 # docker_cloud
-Cloud-in-a-file using docker-compose
+Cloud-in-a-file using docker. To deploy with enforced resource limits, use `docker stack deploy -c docker-compose.yml $STACK_NAME` instead of `docker-compose up -d`.
 
 ## Applications
 
