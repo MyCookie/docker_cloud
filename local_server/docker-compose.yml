@@ -111,8 +111,8 @@ services:
     ports:
       - 8096:8096
     volumes:
-      - /data/docker/jellyfin/config:/config
-      - /data/docker/jellyfin/cache:/cache
+      - /data/docker/volumes/jellyfin/config:/config
+      - /data/docker/volumes/jellyfin/cache:/cache
       - /multimedia:/multimedia:ro
 
 networks:
