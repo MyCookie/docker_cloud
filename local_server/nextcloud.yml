@@ -1,0 +1,54 @@
+# the nextcloud stack
+
+version: '3'
+
+services:
+
+  db:
+    image: mariadb
+    container_name: mariadb # only available when deploying using docker-compose
+    hostname: mariadb
+    networks:
+      - default
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=wow_secure_pass
+    volumes:
+      - /data/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
+  
+  server:
+    image: nextcloud:production # production = stable - 1
+    container_name: nextcloud # only available when deploying using docker-compose
+    hostname: nextcloud
+    networks:
+      - default
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    environment:
+      - MYSQL_HOST=mariadb
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=wow_secure_pass
+      - MYSQL_DATABASE=nextcloud
+    ports:
+      - 8080:80 # port 80 points to port 80 in the image
+    volumes:
+      - /data/docker/volumes/nextcloud/var/www/html:/var/www/html
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin # only available when deploying using docker-compose
+    hostname: phpmyadmin
+    networks:
+      - default
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    environment:
+      - PMA_ARBITRARY=1
+    ports:
+      - 9090:80
+
+networks:
+  default:

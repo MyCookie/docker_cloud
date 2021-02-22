@@ -1,0 +1,51 @@
+# https://docs.gitlab.com/omnibus/docker/
+# https://stackoverflow.com/questions/45329240/cannot-make-request-to-gitlab-running-in-the-official-docker-container
+
+# https://docs.gitlab.com/runner/install/docker.html
+# one-liner:
+# docker run -d --name gitlab-runner --restart always -v /data/docker/volumes/gitlab-runner/config:/etc/gitlab-runner -v /var/run/docker.sock:/var/run/docker.sock gitlab/gitlab-runner:latest
+# 
+# register before using:
+# docker run --rm -t -i -v /data/docker/volumes/gitlab-runner/config:/etc/gitlab-runner gitlab/gitlab-runner:latest register
+
+version: '3'
+
+services:
+
+  server:
+    image: 'gitlab/gitlab-ce:latest' # TODO: make a plan to switch to production
+    container_name: gitlab # only aviailable when deploying using docker-compose
+    hostname: gitlab
+    networks:
+      - default
+    restart: unless-stopped
+    labels:
+      com.centurylinklabs.watchtower.enable: "false"
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'http://192.168.1.101:8888'
+    ports:
+      - 8888:8888 # port 8888 points to port 8888 in the image (see stackoverflow above)
+      - '222:22'
+    volumes:
+      - /data/docker/volumes/gitlab/etc/gitlab:/etc/gitlab # config files
+      - /data/docker/volumes/gitlab/var/log/gitlab:/var/log/gitlab # logs
+      - /data/docker/volumes/gitlab/var/opt/gitlab:/var/opt/gitlab # data
+    deploy: # only available when deploying to a stack (ie. swarms)
+      resources:
+        limits:
+          memory: 4G
+  
+  runner:
+    image: 'gitlab/gitlab-runner:latest'
+    container_name: gitlab_runner # only available when deploying using docker-compose
+    hostname: gitlab_runner
+    networks:
+      - default
+    restart: unless-stopped
+    volumes:
+      - /data/docker/volumes/gitlab-runner/etc/gitlab-runner:/etc/gitlab-runner # config files
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  default:

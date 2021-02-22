@@ -1,0 +1,52 @@
+# services
+#   - watchower will update containers regularly
+#   - gitea is a backup for gitlab repos
+#   - jellyfin serves transcoded content
+
+version: '3'
+
+services:
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    container_name: watchtower # only available when deploying using docker-compose
+    restart: always
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=3600 # update once an hour to prevent hitting docker hub's limits
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  gitea:
+    image: gitea/gitea
+    container_name: gitea # only available when deploying using docker-compose
+    hostname: gitea
+    networks:
+      - default
+    restart: unless-stopped
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+    ports:
+      - '3000:3000'
+      - '2222:22'
+    volumes:
+      - /data/docker/volumes/gitea/data:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+
+  jellyfin:
+    image: jellyfin/jellyfin
+    container_name: jellyfin # only available when deploying using docker-compose
+    hostname: jellyfin
+    networks:
+      - default
+    restart: unless-stopped
+    ports:
+      - 8096:8096
+    volumes:
+      - /data/docker/volumes/jellyfin/config:/config
+      - /data/docker/volumes/jellyfin/cache:/cache
+      - /srv:/srv:ro
+
+networks:
+  default:
