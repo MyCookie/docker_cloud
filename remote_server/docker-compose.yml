@@ -53,6 +53,11 @@ services:
         restart: unless-stopped
         volumes:
             - /data/srv/var/docker/volumes/thelounge/var/opt/thelounge:/var/opt/thelounge
+    element:
+        image: vectorim/element-web
+        container_name: element-web
+        hostname: element
+        restart: unless-stopped
     mariadb:
         image: mariadb:latest
         container_name: mariadb
