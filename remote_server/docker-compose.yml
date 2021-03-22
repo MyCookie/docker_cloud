@@ -59,6 +59,8 @@ services:
         hostname: element
         restart: unless-stopped
     synapse:
+        # to do a first-run, it first requires a config file, generate it using:
+        # docker run -it --rm --mount type=bind,src=/data/srv/var/docker/volumes/synapse/data,dst=/data -e SYNAPSE_SERVER_NAME=matrix.domain.tld -e SYNAPSE_REPORT_STATS=no matrixdotorg/synapse:latest generate
         image: matrixdotorg/synapse:latest
         container_name: synapse
         hostname: synapse
