@@ -19,6 +19,7 @@ services:
         ports:
             - "80:80"
             - "443:443"
+            - "8448:8448" # for matrix federation
         volumes:
             - /data/srv/var/docker/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
             - /data/srv/var/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
