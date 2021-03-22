@@ -58,6 +58,13 @@ services:
         container_name: element-web
         hostname: element
         restart: unless-stopped
+    synapse:
+        image: matrixdotorg/synapse:latest
+        container_name: synapse
+        hostname: synapse
+        restart: unless-stopped
+        volumes:
+            - /data/srv/var/docker/volumes/synapse/data:/data
     mariadb:
         image: mariadb:latest
         container_name: mariadb
