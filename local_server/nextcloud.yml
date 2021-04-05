@@ -16,6 +16,27 @@ services:
       - MYSQL_ROOT_PASSWORD=wow_secure_pass
     volumes:
       - /data/docker/volumes/mariadb/var/lib/mysql:/var/lib/mysql
+
+  redis:
+    image: redis
+    container_name: redis
+    hostname: redis
+    networks:
+      - default
+    restart: unless-stopped
+    volumes:
+  
+  # allow local remote servers in nextcloud:
+  # docker exec -it -u 33 $NEXTCLOUD_CONTAINER /bin/bash -c "./occ config:system:set allow_local_remote_servers --type bool --value true"
+  onlyoffice:
+    image: onlyoffice/documentserver
+    container_name: onlyoffice
+    hostname: onlyoffice
+    networks:
+      - default
+    restart: unless-stopped
+    ports:
+      - 8088:80
   
   server:
     image: nextcloud:production # production = stable - 1
@@ -26,6 +47,7 @@ services:
     restart: unless-stopped
     depends_on:
       - mariadb
+      - redis
     environment:
       - MYSQL_HOST=mariadb
       - MYSQL_USER=nextcloud
@@ -49,6 +71,18 @@ services:
       - PMA_ARBITRARY=1
     ports:
       - 9090:80
+
+  redisinsight:
+    image: redislabs/redisinsight
+    container_name: redisinsight
+    hostname: redisinsight
+    networks:
+      - default
+    restart: unless-stopped
+    depends_on:
+      - redis
+    ports:
+      - 8001:8001
 
 networks:
   default:
