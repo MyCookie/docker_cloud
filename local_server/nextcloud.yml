@@ -24,7 +24,6 @@ services:
     networks:
       - default
     restart: unless-stopped
-    volumes:
   
   # allow local remote servers in nextcloud:
   # docker exec -it -u 33 $NEXTCLOUD_CONTAINER /bin/bash -c "./occ config:system:set allow_local_remote_servers --type bool --value true"
@@ -53,6 +52,7 @@ services:
       - MYSQL_USER=nextcloud
       - MYSQL_PASSWORD=wow_secure_pass
       - MYSQL_DATABASE=nextcloud
+      - REDIS_HOST=redis
     ports:
       - 8080:80 # port 80 points to port 80 in the image
     volumes:
