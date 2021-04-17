@@ -92,20 +92,21 @@ services:
     volumes:
       - /data/docker/volumes/nextcloud/var/www/html:/var/www/html
 
-  phpmyadmin:
-    image: phpmyadmin
-    container_name: phpmyadmin # only available when deploying using docker-compose
-    hostname: phpmyadmin
+  adminer:
+    image: adminer
+    container_name: adminer
+    hostname: adminer
     networks:
       nextcloud:
         aliases:
-          - phpmyadmin
-          - pma
+          - adminer
     restart: unless-stopped
     depends_on:
       - mariadb
     environment:
-      - PMA_HOST=mariadb
+      - ADMINER_DEFAULT_SERVER=mariadb
+    volumes:
+      - /data/docker/volumes/adminer/var/www/html/adminer.css:/var/www/html/adminer.css
 
 networks:
   nextcloud:
