@@ -2,6 +2,9 @@
 #   - watchower will update containers regularly
 #   - gitea is a backup for gitlab repos
 #   - jellyfin serves transcoded content
+#
+# one-liner for watchtower:
+# docker run -d -v /var/run/docker.sock:/var/run/docker.sock --env WATCHTOWER_POLL_INTERVAL=3600 --restart always --name watchtower containrrr/watchtower
 
 version: '3'
 
