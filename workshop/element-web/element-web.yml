@@ -1,0 +1,41 @@
+# element-web on docker with a reverse proxy
+
+version: "3"
+
+services:
+  watchtower:
+        image: containrrr/watchtower
+        container_name: watchtower
+        hostname: watchtower
+        restart: always
+        environment:
+            - WATCHTOWER_POLL_INTERVAL=3600 # update every hour to prevent hitting docker hub's limit
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+    nginx:
+        image: nginx:stable-alpine
+        container_name: nginx
+        hostname: nignx
+        restart: always
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - /data/docker/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+            - /data/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /data/docker/volumes/certbot/var/www/certbot:/var/www/certbot
+    certbot:
+        image: certbot/certbot
+        container_name: certbot
+        hostname: certbot
+        restart: always
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+        volumes:
+            - /data/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /data/docker/volumes/certbot/var/www/certbot:/var/www/certbot
+    element:
+        image: vectorim/element-web
+        container_name: element-web
+        hostname: element
+        restart: unless-stopped
