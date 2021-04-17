@@ -21,9 +21,9 @@ services:
             - "443:443"
             - "8022:8022" # gitea ssh
         volumes:
-            - /data/docker/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
-            - /data/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
-            - /data/docker/volumes/certbot/var/www/certbot:/var/www/certbot
+            - nginx:/etc/nginx/conf.d
+            - letsencrypt:/etc/letsencrypt
+            - certbot:/var/www/certbot
     certbot:
         image: certbot/certbot
         container_name: certbot
@@ -31,8 +31,8 @@ services:
         restart: always
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
         volumes:
-            - /data/docker/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
-            - /data/docker/volumes/certbot/var/www/certbot:/var/www/certbot
+            - letsencrypt:/etc/letsencrypt
+            - certbot:/var/www/certbot
     gitea:
         image: gitea/gitea:latest
         container_name: gitea
@@ -42,7 +42,7 @@ services:
             - USER_GID=1000
         restart: unless-stopped
         volumes:
-            - /data/docker/volumes/gitea/data:/data
+            - gitea:/data
             - /etc/timezone:/etc/timezone:ro
             - /etc/localtime:/etc/localtime:ro
     thelounge:
@@ -51,7 +51,7 @@ services:
         hostname: thelounge
         restart: unless-stopped
         volumes:
-            - /data/docker/volumes/thelounge/var/opt/thelounge:/var/opt/thelounge
+            - thelounge:/var/opt/thelounge
     express_server:
         build: express_server
         container_name: express_server
@@ -59,6 +59,13 @@ services:
         restart: always
         ports:
             - "8080:8080"
+
+volumes:
+    nginx:
+    certbot:
+    letsencrypt:
+    gitea:
+    thelounge:
 
 networks:
     dockercloud:
