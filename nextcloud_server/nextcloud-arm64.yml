@@ -93,7 +93,7 @@ services:
       - /data/docker/volumes/nextcloud/var/www/html:/var/www/html
 
   phpmyadmin:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     container_name: phpmyadmin # only available when deploying using docker-compose
     hostname: phpmyadmin
     networks:
