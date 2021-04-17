@@ -24,8 +24,8 @@ services:
             - "8022:8022" # gitea ssh
         volumes:
             - /home/ubuntu/volumes/nginx:/etc/nginx/conf.d
-            - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
-            - /home/ubuntu/volumes/certbot:/var/www/certbot
+            - /home/ubuntu/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /home/ubuntu/volumes/certbot/var/www/certbot:/var/www/certbot
     certbot:
         image: certbot/certbot
         container_name: certbot
@@ -33,8 +33,8 @@ services:
         restart: always
         entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
         volumes:
-            - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
-            - /home/ubuntu/volumes/certbot:/var/www/certbot
+            - /home/ubuntu/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+            - /home/ubuntu/volumes/certbot/var/www/certbot:/var/www/certbot
     gitea:
         image: gitea/gitea:latest
         container_name: gitea
