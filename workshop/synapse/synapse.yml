@@ -1,0 +1,57 @@
+# before starting, create a config file using:
+# docker run -it --rm --mount type=bind,src=/data/docker/volumes/synapse/data,dst=/data -e SYNAPSE_SERVER_NAME=matrix.domain.tld -e SYNAPSE_REPORT_STATS=no matrixdotorg/synapse:latest generate
+version: "3"
+
+services:
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower
+    hostname: watchtower
+    restart: always
+    environment:
+      - WATCHTOWER_POLL_INTERVAL=3600 # update every hour to prevent hitting docker hub's limit
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  nginx:
+    image: nginx:stable-alpine
+    container_name: nginx
+    hostname: nignx
+    networks:
+      - default
+    restart: always
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8448:8448" # for matrix federation
+    volumes:
+      - /home/ubuntu/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
+      - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
+      - /home/ubuntu/volumes/certbot:/var/www/certbot
+
+ certbot:
+    image: certbot/certbot
+    container_name: certbot
+    hostname: certbot
+    networks:
+      - default
+    restart: always
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    volumes:
+      - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
+      - /home/ubuntu/volumes/certbot:/var/www/certbot
+
+  synapse:
+    image: matrixdotorg/synapse:latest
+    container_name: synapse
+    hostname: synapse
+    networks:
+      - default
+    restart: unless-stopped
+    volumes:
+      - /home/ubuntu/volumes/synapse:/data
+
+networks:
+  default:
