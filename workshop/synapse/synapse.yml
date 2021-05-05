@@ -28,8 +28,8 @@ services:
       - "8448:8448" # for matrix federation
     volumes:
       - /home/ubuntu/volumes/nginx/etc/nginx/conf.d:/etc/nginx/conf.d
-      - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
-      - /home/ubuntu/volumes/certbot:/var/www/certbot
+      - /home/ubuntu/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+      - /home/ubuntu/volumes/certbot/var/www/certbot:/var/www/certbot
 
  certbot:
     image: certbot/certbot
@@ -40,8 +40,8 @@ services:
     restart: always
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
     volumes:
-      - /home/ubuntu/volumes/letsencrypt:/etc/letsencrypt
-      - /home/ubuntu/volumes/certbot:/var/www/certbot
+      - /home/ubuntu/volumes/certbot/etc/letsencrypt:/etc/letsencrypt
+      - /home/ubuntu/volumes/certbot/var/www/certbot:/var/www/certbot
 
   synapse:
     image: matrixdotorg/synapse:latest
@@ -51,7 +51,7 @@ services:
       - default
     restart: unless-stopped
     volumes:
-      - /home/ubuntu/volumes/synapse:/data
+      - /home/ubuntu/volumes/synapse/data:/data
 
 networks:
   default:
