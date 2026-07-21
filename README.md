@@ -1,5 +1,10 @@
 # docker_cloud
-Cloud-in-a-box using docker.
+
+A self-hosted, multi-service private cloud built on Docker — the **2019–2021 predecessor** to my current [Homelab](https://github.com/MyCookie/Homelab).
+
+It runs Nextcloud, GitLab / Gitea, and Matrix (Synapse + Element) as resource-limited **Docker Swarm** stacks behind an **nginx** reverse proxy using **SNI over TLS**, with automated **Let's Encrypt** certificates and **Portainer** for stack management. The deployment is split into a `local_server` and an internet-facing `remote_server`, with a `workshop/` of per-service stacks used to build and test each app in isolation.
+
+**What this demonstrates:** container orchestration with Swarm stacks and enforced resource limits, serving multiple apps from one host via SNI/TLS reverse-proxying, self-hosted identity and collaboration services, and Let's Encrypt automation — the foundation the current [Homelab](https://github.com/MyCookie/Homelab) grew from (which has since moved to Docker Compose, Caddy, ZFS, and a GPU LLM-inference layer).
 
 ## Deploying
 
@@ -9,7 +14,7 @@ Deploying using `docker-compose` will not enforce resource limits. Gitlab and Ne
 
 ### Networking
 
-Each stack is compromised of a few, interconnected, services. Most stacks have their own defined network in their YAML file.
+Each stack is composed of a few interconnected services. Most stacks have their own defined network in their YAML file.
 
 ### Portainer
 
